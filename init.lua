@@ -2,7 +2,7 @@ poi = {}
 poi.places = {}
 
 -- Save & load functions
-local function poi.save_data()
+local function save_data()
 	if poi.places == nil then
 		return
 	end
