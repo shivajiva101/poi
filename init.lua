@@ -2,7 +2,7 @@ poi = {}
 poi.places = {}
 
 -- Save & load functions
-function save_data()
+function poi.save_data()
 	if poi.places == nil then
 		return
 	end
@@ -14,7 +14,7 @@ function save_data()
 	end
 end
 
-function load_data()
+function poi.load_data()
 	local file = io.open(minetest.get_worldpath().."/poi.txt", "r")
 	if file then
 		local table = minetest.deserialize(file:read("*all"))
@@ -26,7 +26,7 @@ function load_data()
 end
 
 -- load data from file
-load_data()
+poi.load_data()
 
 minetest.register_chatcommand("poi_add", {
 	params = "<name>",
@@ -50,7 +50,7 @@ minetest.register_chatcommand("poi_add", {
 			if player then
 				pos = player:getpos()
 				poi.places[param] = {x=pos.x, y=pos.y, z=pos.z}
-				save_data()
+				poi.save_data()
 				return false, param.." added at "..minetest.pos_to_string(pos)
 			else
 				return false, "Unable to get position."
@@ -73,7 +73,7 @@ minetest.register_chatcommand("poi_remove", {
 		if poi.places[param] then
 		    poi.places[param] = nil
 		    -- save arena to file
-		    save_data()
+		    poi.save_data()
 		    return false, param.." POI removed!"
 		else
 		  -- return if name doesn't exist
