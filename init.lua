@@ -1,5 +1,6 @@
 poi = {}
 poi.places = {}
+poi.places.shops = {}
 
 -- Save & load functions
 local function save_data()
@@ -27,6 +28,99 @@ end
 
 -- load data from file
 load_data()
+
+if not poi.places.shops then poi.places.shops = {} end
+--register shops
+for k, v in pairs(poi.places.shops) do
+  minetest.register_chatcommand(k, {
+    params = "",
+    description = "Teleport to ".. k .." shop",
+    
+    func = function(name, param)
+	    local pos = v
+	    minetest.get_player_by_name(name):setpos(pos)
+	    minetest.log("action", name.." used /shivaloka ")
+	    minetest.chat_send_player(name, "Welcome to ".. k .."! Click the shop and hit the stack under the item you wish to buy. Have a nice day!")
+	    return
+  end,
+})
+end
+
+minetest.register_chatcommand("shop_add", {
+  params = "<name>",
+  description = "Adds a shop location to the list, only takes effect after a restart!",
+  privs = {server=true},
+  
+  func = function(name, param)
+  
+	  if param == "" then
+	    return false, "Invalid usage, see /help poi_add."
+	  end
+  
+	  -- return if name already in use
+	  if poi.places.shops[param] then
+	    return false, param.." is already assigned!"
+	  end
+  
+	  -- get player position and store using name as key
+	  local player = minetest.get_player_by_name(name)
+	  local pos = nil
+	  if player then
+	    pos = player:getpos()
+	    poi.places.shops[param] = {x=pos.x, y=pos.y, z=pos.z}
+	    save_data()
+	    return false, param.." added at "..minetest.pos_to_string(pos)
+	  else
+	    return false, "Unable to get position."
+	  end
+end,
+})
+
+minetest.register_chatcommand("shop_remove", {
+  params = "<name>",
+  description = "Removes a Point Of Interest from the list",
+  privs = {server=true},
+  
+  func = function(name, param)
+  
+  if param == "" then
+    return false, "Invalid usage!"
+  end
+  
+  -- remove entry
+  if poi.places.shops[param] then
+    poi.places.shops[param] = nil
+    -- save arena to file
+    save_data()
+    return false, param.." shop removed!"
+  else
+    -- return if name doesn't exist
+    return false, param.." doesn't exist!"
+    
+  end		
+end,
+})
+
+minetest.register_chatcommand("shop", {
+  params = "", 
+  description = "Lists shops",
+  privs = {interact=true},
+  
+  func = function(name, param)
+  
+    local poiStrings = {}
+    for key, value in pairs(poi.places.shops) do
+      table.insert(poiStrings, key)
+    end
+    if #poiStrings == 0 then
+      return true, "No shops set!"
+    end
+    table.insert(poiStrings, "Useage: type /<shop_name> to teleport")
+    return true, table.concat(poiStrings, "\n")
+  		    
+end,
+})
+
 
 minetest.register_chatcommand("poi_add", {
 	params = "<name>",
