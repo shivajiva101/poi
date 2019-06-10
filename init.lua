@@ -45,8 +45,8 @@ for k, v in pairs(poi.places.shops) do
         local text = 'Welcome to '
         ..k..'! Click the shop and hit the stack under the item'
         ..' you wish to buy. Have a nice day!'
-        minetest.get_player_by_name(name):setpos(pos)
-        minetest.log("action", name.." used /shivaloka ")
+        minetest.get_player_by_name(name):set_pos(pos)
+        minetest.log("action", name.." used /"..k)
         minetest.chat_send_player(name, text)
         return
       end,
@@ -73,7 +73,7 @@ minetest.register_chatcommand("shop_add", {
       local player = minetest.get_player_by_name(name)
       local pos = nil
       if player then
-        pos = player:getpos()
+        pos = player:get_pos()
         poi.places.shops[param] = {x=pos.x, y=pos.y, z=pos.z}
         save_data()
         return false, param.." added at "..minetest.pos_to_string(pos)
@@ -148,7 +148,7 @@ minetest.register_chatcommand("poi_add", {
       local player = minetest.get_player_by_name(name)
       local pos = nil
       if player then
-        pos = player:getpos()
+        pos = player:get_pos()
         poi.places.poi[param] = {x=pos.x, y=pos.y, z=pos.z}
         save_data()
         return false, param.." added at "..minetest.pos_to_string(pos)
@@ -205,7 +205,7 @@ minetest.register_chatcommand("poi", {
 	  local pos = {x=poi.places.poi[param].x, y=poi.places.poi[param].y, z=poi.places.poi[param].z}
 	  -- last check
 	  if pos and player then
-	    player:setpos(pos) -- move player to new position
+	    player:set_pos(pos) -- move player to new position
 	  end
 	else
 	  return true, param.." doesn't exist!"
